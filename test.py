@@ -48,7 +48,7 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                 nose = [lm[0].x, lm[0].y]
                 if prev_point != None:
                     subprocess.call(cmd, shell=True)
-                    print("Velocity X:", nose[0]-prev_point[0], "\nVelocity Y:", -(nose[1]-prev_point[1]))
+                    print("Velocity X:", round(nose[0]-prev_point[0], 3), "\nVelocity Y:", round(-(nose[1]-prev_point[1]), 3))
                 # Set to prev_point
                 prev_point = nose
                 # reset delay counter
