@@ -61,8 +61,8 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                 if prev_point != None:
                     subprocess.call(cmd, shell=True)
                     print("Velocity X:", round(nose[0]-prev_point[0], 3), "\nVelocity Y:", round(-(nose[1]-prev_point[1]), 3))
-                    print("Right Leg Angle:", round(math.degrees(math.atan2(right_leg_lower[1]-right_leg_mid[1], right_leg_lower[0]-right_leg_mid[0]) - math.atan2(right_leg_upper[1]-right_leg_mid[1], right_leg_upper[0]-right_leg_mid[0])), 2))
-                    print("Left Leg Angle:", round(math.degrees(math.atan2(left_leg_lower[1]-left_leg_mid[1], left_leg_lower[0]-left_leg_mid[0]) - math.atan2(left_leg_upper[1]-left_leg_mid[1], left_leg_upper[0]-left_leg_mid[0])), 2))
+                    print("Right Leg Angle:", round((math.degrees(math.atan2(right_leg_lower[1]-right_leg_mid[1], right_leg_lower[0]-right_leg_mid[0]) - math.atan2(right_leg_upper[1]-right_leg_mid[1], right_leg_upper[0]-right_leg_mid[0])))%180, 2))
+                    print("Left Leg Angle:", round((math.degrees(math.atan2(left_leg_lower[1]-left_leg_mid[1], left_leg_lower[0]-left_leg_mid[0]) - math.atan2(left_leg_upper[1]-left_leg_mid[1], left_leg_upper[0]-left_leg_mid[0])))%180, 2))
 
                 # Set to prev_point
                 prev_point = nose
