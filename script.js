@@ -12,7 +12,7 @@ function drawLineChart(ctx, data, labels, minY, maxY) {
     const canvas = ctx.canvas;
     const width = canvas.width;
     const height = canvas.height;
-    const padding = 39;
+    const padding = 40;
     const chartWidth = width - padding * 2;
     const chartHeight = height - padding * 2;
 
