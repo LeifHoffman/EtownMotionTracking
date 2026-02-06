@@ -24,9 +24,13 @@ prev_point = None
 cmd = "cls" if os.name == "nt" else "clear"
 
 # change to video file path if you prefer
-cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)  
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  
+if not cap.isOpened():
+    print("Error: Cannot open webcam!")
+    exit()
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+print("Webcam opened successfully. Press ESC to stop.")
 
 # video writer to save output video
 fourcc = cv2.VideoWriter_fourcc(*"XVID")
