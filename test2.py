@@ -32,9 +32,6 @@ def on_results(result: vision.PoseLandmarkerResult, output_image: mp.Image, time
     # result.landmarks is a list of POSE landmarks per detected person
     if result.pose_landmarks:
         latest_landmarks = result.pose_landmarks
-        for i, single_pose in enumerate(result.pose_landmarks):
-            print(f"Pose {i} landmarks count:", len(single_pose))
-            # single_pose contains x/y/z coords for each body landmark
     else:
         latest_landmarks = None
 
@@ -82,26 +79,36 @@ try:
             h, w = frame.shape[:2]
             
             # Draw connections first (so they appear behind the points)
+            # Skip face landmarks (indices 0-10)
             for pose in latest_landmarks:
                 for connection in POSE_CONNECTIONS:
                     start_idx, end_idx = connection
+                    # Skip connections that involve face landmarks
+                    if start_idx <= 10 or end_idx <= 10:
+                        continue
                     if start_idx < len(pose) and end_idx < len(pose):
                         start = pose[start_idx]
                         end = pose[end_idx]
                         x1, y1 = int(start.x * w), int(start.y * h)
                         x2, y2 = int(end.x * w), int(end.y * h)
-                        cv2.line(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        cv2.line(frame, (x1, y1), (x2, y2), (255, 255, 255), 2)
             
-            # Draw landmark points
+            # Draw landmark points (skip face landmarks 0-10)
             for pose in latest_landmarks:
-                for landmark in pose:
+                for idx, landmark in enumerate(pose):
+                    if idx <= 10:  # Skip face landmarks
+                        continue
                     x = int(landmark.x * w)
                     y = int(landmark.y * h)
-                    cv2.circle(frame, (x, y), 5, (0, 255, 0), -1)
+                    # White circle
+                    cv2.circle(frame, (x, y), 5, (255, 255, 255), -1)
+                    # Orange circle
+                    cv2.circle(frame, (x, y), 4, (0, 165, 255), -1)
+                    
 
         # Draw frame so you see video
         cv2.imshow("Webcam Pose Tracking", frame)
-        if cv2.waitKey(5) & 0xFF == ord("q"):
+        if cv2.waitKey(1) == 27:
             break
 
 finally:
