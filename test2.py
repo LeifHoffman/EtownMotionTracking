@@ -52,6 +52,12 @@ landmarker = PoseLandmarker.create_from_options(options)
 
 cap = cv2.VideoCapture(0)
 prev = 0
+# Recording state
+recording = False
+out = None
+fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+writer_fps = None
+writer_size = None
 
 # Debug: Check if webcam was opened
 if not cap.isOpened():
@@ -113,12 +119,45 @@ try:
                     cv2.circle(frame, (x, y), 4, (0, 165, 255), -1)
                     
 
+        # If recording, write the frame
+        if recording and out is not None:
+            out.write(frame)
+
+        # Draw recording indicator
+        if recording:
+            cv2.circle(frame, (20, 20), 8, (0, 0, 255), -1)
+            cv2.putText(frame, "REC", (35, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+
         # Draw frame so you see video
         cv2.imshow("Webcam Pose Tracking", frame)
-        if cv2.waitKey(1) == 27:
+        key = cv2.waitKey(1) & 0xFF
+        if key == 27:  # ESC to quit
             break
+        # Toggle recording with 'r'
+        if key == ord('r'):
+            recording = not recording
+            if recording:
+                # Initialize writer on first record start to get actual frame size/fps
+                if writer_fps is None:
+                    fps = cap.get(cv2.CAP_PROP_FPS)
+                    writer_fps = fps if fps and fps > 0 else 30.0
+                if writer_size is None:
+                    h, w = frame.shape[:2]
+                    writer_size = (w, h)
+                # TODO Update 'name' variable to be dynamic based on user input
+                name = "Leif Recording"
+                filename = f"recording_{name}.mp4"
+                out = cv2.VideoWriter(filename, fourcc, writer_fps, writer_size)
+                print(f"Recording started -> {filename}")
+            else:
+                if out is not None:
+                    out.release()
+                    out = None
+                print("Recording stopped")
 
 finally:
     landmarker.close()
+    if out is not None:
+        out.release()
     cap.release()
     cv2.destroyAllWindows()
