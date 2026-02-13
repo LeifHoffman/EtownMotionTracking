@@ -1,7 +1,8 @@
 #!/bin/bash
 
+
 # Automation Startup Script for Raspberry Pi 5
-# Checks for Python, Git, Apache2, and MySQL, then starts services
+# Checks for Python, Git, Apache2, MySQL, and PHP
 
 
 # Color codes for output
@@ -90,6 +91,30 @@ check_mysql() {
 }
 
 
+# Function to check PHP installation
+check_php() {
+    echo -n "Checking for PHP... "
+    if command -v php &> /dev/null; then
+        PHP_VERSION=$(php -v 2>/dev/null | head -n1 | awk '{print $2}')
+        echo -e "${GREEN}Found${NC} (Version: $PHP_VERSION)"
+        
+        # Check if Apache PHP module is loaded
+        if apache2ctl -M 2>/dev/null | grep -q php; then
+            echo -e "              ${GREEN}Apache PHP module loaded${NC}"
+        else
+            echo -e "              ${YELLOW}Warning: Apache PHP module may not be loaded${NC}"
+        fi
+        
+        log_message "PHP $PHP_VERSION found"
+        return 0
+    else
+        echo -e "${RED}Not Found${NC}"
+        log_message "PHP not found"
+        return 1
+    fi
+}
+
+
 # Function to start Apache2
 start_apache() {
     echo -n "Starting Apache2... "
@@ -160,12 +185,14 @@ PYTHON_INSTALLED=0
 GIT_INSTALLED=0
 APACHE_INSTALLED=0
 MYSQL_INSTALLED=0
+PHP_INSTALLED=0
 
 
 check_python && PYTHON_INSTALLED=1
 check_git && GIT_INSTALLED=1
 check_apache && APACHE_INSTALLED=1
 check_mysql && MYSQL_INSTALLED=1
+check_php && PHP_INSTALLED=1
 
 
 echo ""
@@ -174,8 +201,8 @@ echo "  Installation Summary"
 echo "========================================="
 
 
-TOTAL_FOUND=$((PYTHON_INSTALLED + GIT_INSTALLED + APACHE_INSTALLED + MYSQL_INSTALLED))
-echo "Found: $TOTAL_FOUND/4 components"
+TOTAL_FOUND=$((PYTHON_INSTALLED + GIT_INSTALLED + APACHE_INSTALLED + MYSQL_INSTALLED + PHP_INSTALLED))
+echo "Found: $TOTAL_FOUND/5 components"
 echo ""
 
 
@@ -185,6 +212,7 @@ MISSING_COMPONENTS=()
 [ $GIT_INSTALLED -eq 0 ] && MISSING_COMPONENTS+=("Git")
 [ $APACHE_INSTALLED -eq 0 ] && MISSING_COMPONENTS+=("Apache2")
 [ $MYSQL_INSTALLED -eq 0 ] && MISSING_COMPONENTS+=("MySQL/MariaDB")
+[ $PHP_INSTALLED -eq 0 ] && MISSING_COMPONENTS+=("PHP")
 
 
 if [ ${#MISSING_COMPONENTS[@]} -gt 0 ]; then
