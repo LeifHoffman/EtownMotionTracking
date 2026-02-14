@@ -13,6 +13,13 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 
+# Configuration
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WEB_ROOT="/var/www/html"
+INDEX_FILE="$SCRIPT_DIR/../index.html"
+CSS_FILE="$SCRIPT_DIR/../styles.css"
+
+
 # # Log file location
 # LOG_FILE="/var/log/website_startup.log"
 # 
@@ -21,7 +28,7 @@ NC='\033[0m' # No Color
 #     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
 # }
 
-# Dummy log function - replace with actual logging if needed
+# Dummy log function (since logging is commented out)
 log_message() {
     :  # No-op
 }
@@ -115,6 +122,61 @@ check_php() {
 }
 
 
+# Function to deploy website files
+deploy_website() {
+    echo ""
+    echo "========================================="
+    echo "  Deploying Website"
+    echo "========================================="
+    
+    # Check if index.html exists
+    if [ ! -f "$INDEX_FILE" ]; then
+        echo -e "${RED}Error: index.html not found at $INDEX_FILE${NC}"
+        log_message "index.html not found"
+        return 1
+    fi
+    
+    echo -n "Copying index.html... "
+    sudo cp "$INDEX_FILE" "$WEB_ROOT/index.html"
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Done${NC}"
+        log_message "index.html copied successfully"
+    else
+        echo -e "${RED}Failed${NC}"
+        log_message "Failed to copy index.html"
+        return 1
+    fi
+    
+    # Check if styles.css exists
+    if [ -f "$CSS_FILE" ]; then
+        echo -n "Copying styles.css... "
+        sudo cp "$CSS_FILE" "$WEB_ROOT/styles.css"
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}Done${NC}"
+            log_message "styles.css copied successfully"
+        else
+            echo -e "${RED}Failed${NC}"
+            log_message "Failed to copy styles.css"
+        fi
+    else
+        echo -e "${YELLOW}Warning: styles.css not found at $CSS_FILE${NC}"
+        log_message "styles.css not found"
+    fi
+    
+    # Set proper permissions
+    echo -n "Setting permissions... "
+    sudo chown www-data:www-data "$WEB_ROOT/index.html"
+    sudo chmod 644 "$WEB_ROOT/index.html"
+    if [ -f "$WEB_ROOT/styles.css" ]; then
+        sudo chown www-data:www-data "$WEB_ROOT/styles.css"
+        sudo chmod 644 "$WEB_ROOT/styles.css"
+    fi
+    echo -e "${GREEN}Done${NC}"
+    
+    return 0
+}
+
+
 # Function to start Apache2
 start_apache() {
     echo -n "Starting Apache2... "
@@ -169,6 +231,29 @@ start_mysql() {
             log_message "$SERVICE_NAME failed to start"
             return 1
         fi
+    fi
+}
+
+
+# Function to open browser
+open_browser() {
+    echo ""
+    echo -n "Opening website in browser... "
+    
+    # Get the local IP address
+    LOCAL_IP=$(hostname -I | awk '{print $1}')
+    
+    # Try to open in Chromium (default on Raspberry Pi OS)
+    if command -v chromium-browser &> /dev/null; then
+        chromium-browser "http://localhost" &> /dev/null &
+        echo -e "${GREEN}Done${NC}"
+    elif command -v firefox &> /dev/null; then
+        firefox "http://localhost" &> /dev/null &
+        echo -e "${GREEN}Done${NC}"
+    else
+        echo -e "${YELLOW}No browser found${NC}"
+        echo -e "  Access website at: ${BLUE}http://localhost${NC}"
+        echo -e "  Or from network at: ${BLUE}http://$LOCAL_IP${NC}"
     fi
 }
 
@@ -234,7 +319,12 @@ echo -e "${GREEN}✓ All components installed${NC}"
 echo ""
 
 
+# Deploy website files
+deploy_website
+
+
 # Start services
+echo ""
 echo "========================================="
 echo "  Starting Services"
 echo "========================================="
@@ -272,11 +362,25 @@ else
 fi
 
 
+# Get local IP for access info
+LOCAL_IP=$(hostname -I | awk '{print $1}')
 echo ""
+echo "========================================="
+echo -e "${GREEN}✓ Website is live!${NC}"
+echo "========================================="
+echo -e "Local access:   ${BLUE}http://localhost${NC}"
+echo -e "Network access: ${BLUE}http://$LOCAL_IP${NC}"
+echo ""
+
+# Open browser
+open_browser
+
 log_message "=== Startup script completed successfully ==="
 
-# Keep script running - wait for user input
 echo "========================================="
 echo -e "${GREEN}Services are running!${NC}"
+
+# Keep script running - wait for user input
+echo ""
 echo "Press Enter to exit, or Ctrl+C to stop services first..."
 read -p ""
