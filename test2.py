@@ -53,6 +53,13 @@ landmarker = PoseLandmarker.create_from_options(options)
 cap = cv2.VideoCapture(0)
 prev = 0
 
+# Debug: Check if webcam was opened
+if not cap.isOpened():
+    print("ERROR: Could not open webcam. Check if camera is connected and accessible.")
+    exit()
+
+print("Webcam opened successfully. Starting pose tracking...")
+
 try:
     while cap.isOpened():
         success, frame = cap.read()
