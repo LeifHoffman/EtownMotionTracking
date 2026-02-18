@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elizabethtown College Athletics - Session Recording</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Elizabethtown College Athletics</h1>
+        <div class="header-right">
+            <button class="menu-btn">···</button>
+            <button class="share-btn">Share</button>
+            <div class="profile-pic"></div>
+        </div>
+    </div>
+
+    <div class="nav">
+        <a href="index.html" class="nav-item">Home</a>
+        <a href="recording.html" class="nav-item active">Session Recording</a>
+        <a href="reports.html" class="nav-item">Individual Reports</a>
+        <div class="nav-search">🔍 Search Athletes...</div>
+    </div>
+
+    <div class="container">
+        <!-- ACTION CARDS -->
+        <div class="action-grid">
+            <div class="action-card">Start New</div>
+            <div class="action-card">Injury Flags</div>
+            <div class="action-card">Select Athlete</div>
+        </div>
+
+        <!-- VIDEO + METRICS -->
+        <div class="main-grid">
+            <div class="video-panel">
+                <div class="video-grid">
+                    <div class="video-feed video-feed-1">
+                        <div class="figure-container">
+                            <svg class="skeleton-svg" viewBox="0 0 60 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="30" cy="10" r="8" fill="rgba(255,255,255,0.85)"/>
+                                <line x1="30" y1="18" x2="30" y2="65" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                                <line x1="30" y1="30" x2="10" y2="55" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                                <line x1="30" y1="30" x2="50" y2="55" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                                <line x1="30" y1="65" x2="18" y2="95" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                                <line x1="30" y1="65" x2="42" y2="95" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                                <line x1="18" y1="95" x2="15" y2="115" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                                <line x1="42" y1="95" x2="45" y2="115" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                            </svg>
+                        </div>
+                        <div class="video-label">Camera 1</div>
+                    </div>
+                    <div class="video-feed video-feed-2">
+                        <div class="skeleton-icon">
+                            <svg class="skeleton-svg" viewBox="0 0 60 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="30" cy="10" r="8" fill="rgba(255,255,255,0.85)"/>
+                                <line x1="30" y1="18" x2="30" y2="65" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                                <line x1="30" y1="30" x2="10" y2="55" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                                <line x1="30" y1="30" x2="50" y2="55" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                                <line x1="30" y1="65" x2="18" y2="95" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                                <line x1="30" y1="65" x2="42" y2="95" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                                <line x1="18" y1="95" x2="15" y2="115" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                                <line x1="42" y1="95" x2="45" y2="115" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+                            </svg>
+                        </div>
+                        <div class="video-label">Camera 2 (Tracked)</div>
+                    </div>
+                    <div class="video-feed video-feed-3">
+                        <div class="skeleton-icon">
+                            <svg class="skeleton-svg" viewBox="0 0 60 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="30" cy="10" r="8" fill="rgba(100,180,255,0.9)"/>
+                                <line x1="30" y1="18" x2="30" y2="65" stroke="rgba(100,180,255,0.9)" stroke-width="3"/>
+                                <line x1="30" y1="30" x2="10" y2="55" stroke="rgba(100,180,255,0.9)" stroke-width="3"/>
+                                <line x1="30" y1="30" x2="50" y2="55" stroke="rgba(100,180,255,0.9)" stroke-width="3"/>
+                                <line x1="30" y1="65" x2="18" y2="95" stroke="rgba(100,180,255,0.9)" stroke-width="3"/>
+                                <line x1="30" y1="65" x2="42" y2="95" stroke="rgba(100,180,255,0.9)" stroke-width="3"/>
+                                <line x1="18" y1="95" x2="15" y2="115" stroke="rgba(100,180,255,0.9)" stroke-width="3"/>
+                                <line x1="42" y1="95" x2="45" y2="115" stroke="rgba(100,180,255,0.9)" stroke-width="3"/>
+                            </svg>
+                        </div>
+                        <div class="video-label">3D Model</div>
+                    </div>
+                </div>
+                <!-- PLAYBACK CONTROLS -->
+                <div class="playback-controls">
+                    <button class="playback-btn" id="playPauseBtn">▶ Play</button>
+                    <input type="range" class="playback-scrubber" id="scrubber" min="0" max="100" value="0">
+                    <span class="playback-time" id="playbackTime">0:00 / 0:12</span>
+                    <button class="playback-btn" id="flagBtn">🚩 Flag Rep</button>
+                </div>
+            </div>
+
+            <div class="metrics-panel">
+                <div class="metrics-panel-title">Key Metrics to Observe</div>
+                <div class="metric-item">Knee Valgus</div>
+                <div class="metric-item">Jump Height</div>
+                <div class="metric-item">Ground Contact Time</div>
+                <div class="metric-item" id="liveJumpHeight">Live Jump: — in</div>
+                <div class="metric-item" id="liveContactTime">Contact Time: — ms</div>
+            </div>
+        </div>
+
+        <!-- BOTTOM: BAR CHART + SESSION LOG -->
+        <div class="bottom-grid-session">
+            <div class="chart-card">
+                <div class="chart-title">Session Jump Heights</div>
+                <div class="chart-container" style="height:160px;">
+                    <div class="bar-chart" id="sessionBarChart"></div>
+                </div>
+            </div>
+            <div class="table-card">
+                <div class="chart-title">Session Log</div>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Source</th><th>Team</th><th>Type</th></tr>
+                    </thead>
+                    <tbody id="sessionLogBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

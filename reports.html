@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elizabethtown College Athletics - Individual Reports</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Elizabethtown College Athletics</h1>
+        <div class="header-right">
+            <button class="menu-btn">···</button>
+            <button class="share-btn">Share</button>
+            <div class="profile-pic"></div>
+        </div>
+    </div>
+
+    <div class="nav">
+        <a href="index.html" class="nav-item">Home</a>
+        <a href="recording.html" class="nav-item">Session Recording</a>
+        <a href="reports.html" class="nav-item active">Individual Reports</a>
+        <div class="nav-search">🔍 Search Athletes...</div>
+    </div>
+
+    <div class="container">
+        <!-- TOP ROW: PR CARDS + TEST SELECTOR -->
+        <div class="ir-top-row">
+            <div class="ir-pr-card">
+                <div class="ir-pr-label">Vertical Jump PR (in)</div>
+                <div class="ir-pr-value" id="prJumpValue">19.9</div>
+                <div class="ir-pr-sub" id="prJumpRank">#2 All Time</div>
+            </div>
+            <div class="ir-pr-card">
+                <div class="ir-pr-label">40-Yard Dash PR (s)</div>
+                <div class="ir-pr-value" id="prDashValue">4.77</div>
+                <div class="ir-pr-sub" id="prDashRank">#15 All Time</div>
+            </div>
+            <div class="ir-test-selector">
+                <div class="ir-test-title" id="selectedTestLabel">Vertical Jump</div>
+                <div class="ir-test-sub">Select Test</div>
+            </div>
+        </div>
+
+        <!-- MIDDLE ROW: PROFILE + LINE CHART -->
+        <div class="ir-middle-row">
+            <div class="ir-profile-card chart-card">
+                <div class="ir-profile-header">
+                    <div class="ir-athlete-name" id="athleteName">Evan Swanson</div>
+                    <button class="ir-bio-btn">Biography</button>
+                </div>
+                <div class="ir-profile-body">
+                    <div class="ir-athlete-photo">
+                        <div class="ir-photo-placeholder">
+                            <svg width="60" height="80" viewBox="0 0 60 80" fill="none">
+                                <circle cx="30" cy="18" r="14" fill="#ccc"/>
+                                <path d="M5 75 Q5 45 30 45 Q55 45 55 75" fill="#ccc"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ir-athlete-details" id="athleteDetails">
+                        <!-- populated by script.js -->
+                    </div>
+                </div>
+                <div class="ir-jersey-badge" id="athleteJersey">24 <span>BLUE JAYS</span></div>
+            </div>
+
+            <div class="chart-card ir-chart-card">
+                <div class="ir-chart-label">Average Jump Height (in)</div>
+                <div class="ir-line-chart-container">
+                    <canvas id="athleteJumpChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM ROW: TESTS TABLE + VIDEO REPS -->
+        <div class="ir-bottom-row">
+            <div class="table-card ir-tests-card">
+                <div class="chart-title">Recent Tests</div>
+                <table class="data-table">
+                    <thead><tr><th>Date</th><th>Type</th><th>Change</th></tr></thead>
+                    <tbody id="recentTestsBody"></tbody>
+                </table>
+            </div>
+
+            <div>
+                <div class="ir-reps-grid">
+                    <div class="ir-rep-card">
+                        <div class="ir-rep-label">Best Rep</div>
+                        <div class="ir-rep-video">
+                            <svg class="ir-rep-svg" viewBox="0 0 160 120">
+                                <rect width="160" height="120" fill="#d4c9b8"/>
+                                <circle cx="80" cy="30" r="10" fill="rgba(50,50,50,0.7)"/>
+                                <line x1="80" y1="40" x2="80" y2="80" stroke="rgba(50,50,50,0.7)" stroke-width="4"/>
+                                <line x1="80" y1="55" x2="60" y2="72" stroke="rgba(50,50,50,0.7)" stroke-width="4"/>
+                                <line x1="80" y1="55" x2="100" y2="72" stroke="rgba(50,50,50,0.7)" stroke-width="4"/>
+                                <line x1="80" y1="80" x2="68" y2="108" stroke="rgba(50,50,50,0.7)" stroke-width="4"/>
+                                <line x1="80" y1="80" x2="92" y2="108" stroke="rgba(50,50,50,0.7)" stroke-width="4"/>
+                            </svg>
+                            <div class="ir-rep-overlay">
+                                <div class="ir-play-btn">▶</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ir-rep-card">
+                        <div class="ir-rep-label">Worst Rep</div>
+                        <div class="ir-rep-video">
+                            <svg class="ir-rep-svg" viewBox="0 0 160 120">
+                                <rect width="160" height="120" fill="#d4c9b8"/>
+                                <circle cx="80" cy="30" r="10" fill="rgba(50,50,50,0.7)"/>
+                                <line x1="80" y1="40" x2="80" y2="80" stroke="rgba(50,50,50,0.7)" stroke-width="4"/>
+                                <line x1="80" y1="55" x2="55" y2="78" stroke="rgba(50,50,50,0.7)" stroke-width="4"/>
+                                <line x1="80" y1="55" x2="105" y2="78" stroke="rgba(50,50,50,0.7)" stroke-width="4"/>
+                                <line x1="80" y1="80" x2="65" y2="112" stroke="rgba(50,50,50,0.7)" stroke-width="4"/>
+                                <line x1="80" y1="80" x2="95" y2="112" stroke="rgba(50,50,50,0.7)" stroke-width="4"/>
+                            </svg>
+                            <div class="ir-rep-overlay">
+                                <div class="ir-play-btn">▶</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ir-action-btns">
+                    <button class="ir-action-btn">View Metrics</button>
+                    <button class="ir-action-btn">Compare</button>
+                    <button class="ir-action-btn">Advanced</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
