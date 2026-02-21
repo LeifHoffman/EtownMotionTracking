@@ -10,6 +10,22 @@ body {
     color: #1d1d1f;
 }
 
+button {
+    background-color: white;
+    border: none;
+    color: grey;
+    padding: 15px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.button-active {
+    color: black;
+}
+
 .header {
     background: white;
     border-bottom: 1px solid #e5e5e5;
