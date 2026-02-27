@@ -37,6 +37,7 @@
 
         <!-- ACTION CARDS -->
         <div class="action-grid">
+            <button id="run">Run Python</button>
             <div class="action-card">Start New</div>
             <div class="action-card">Injury Flags</div>
             <div class="action-card">Select Athlete</div>
@@ -243,6 +244,88 @@
             `;
             chartEl.appendChild(group);
         });
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function () {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let isRecording = false;
+        let frameInterval = null;
+
+        // Start recording
+        document.getElementById('run').addEventListener('click', async () => {
+            const btn = document.getElementById('run');
+            if (!isRecording) {
+                try {
+                    const response = await fetch(`${API_BASE}/start`, { method: 'POST' });
+                    if (response.ok) {
+                        isRecording = true;
+                        btn.textContent = 'Stop Recording';
+                        btn.style.backgroundColor = '#d9534f';
+                        startFrameCapture();
+                    } else {
+                        alert('Failed to start recording');
+                    }
+                } catch (error) {
+                    console.error('Error starting recording:', error);
+                    alert('Error: Cannot connect to Flask server. Make sure it\'s running on port 5000');
+                }
+            } else {
+                try {
+                    const response = await fetch(`${API_BASE}/stop`, { method: 'POST' });
+                    if (response.ok) {
+                        isRecording = false;
+                        btn.textContent = 'Run Python';
+                        btn.style.backgroundColor = '';
+                        stopFrameCapture();
+                    }
+                } catch (error) {
+                    console.error('Error stopping recording:', error);
+                }
+            }
+        });
+
+        // Continuously fetch and display frames
+        async function startFrameCapture() {
+            frameInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${API_BASE}/frame`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Display frame in first video feed
+                        const img = document.querySelector('.video-feed-1 .figure-container');
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const image = new Image();
+                        image.onload = function() {
+                            canvas.width = image.width;
+                            canvas.height = image.height;
+                            ctx.drawImage(image, 0, 0);
+                            img.innerHTML = '';
+                            img.appendChild(canvas);
+                            canvas.style.width = '100%';
+                            canvas.style.height = '100%';
+                        };
+                        image.src = `data:image/jpeg;base64,${data.frame}`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching frame:', error);
+                }
+            }, 50); // ~20 FPS
+        }
+
+        function stopFrameCapture() {
+            if (frameInterval) {
+                clearInterval(frameInterval);
+                frameInterval = null;
+            }
+        }
 
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function () {
