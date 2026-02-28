@@ -269,7 +269,7 @@
     </div>
 
     <script>
-        // Line chart: Average Jump Height over months
+        // Line chart: Average Jump Height over months <!-- Update this. Looks bad -->
         const ctx = document.getElementById('jumpLineChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
@@ -315,10 +315,10 @@
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function () {
                 document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
+                this.classList.add('active'); 
             });
         });
-    </script>
+    </script> 
 
 </body>
 </html>
