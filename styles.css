@@ -312,6 +312,16 @@ canvas {
     margin-bottom: 24px;
 }
 
+/* Run button recording state */
+#run {
+    /* default looks inherited from generic button */
+}
+
+#run.recording {
+    color: white;                /* text turns white while recording */
+    background-color: #1d1d1f;   /* dark background for contrast */
+}
+
 .action-card {
     background: white;
     border-radius: 12px;
