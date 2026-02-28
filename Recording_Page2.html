@@ -37,8 +37,7 @@
 
         <!-- ACTION CARDS -->
         <div class="action-grid">
-            <button id="run">Run Python</button>
-            <div class="action-card">Start New</div>
+            <button id="run">Start Recording</button>
             <div class="action-card">Injury Flags</div>
             <div class="action-card">Select Athlete</div>
         </div>
@@ -268,6 +267,7 @@
                         isRecording = true;
                         btn.textContent = 'Stop Recording';
                         btn.style.backgroundColor = '#d9534f';
+                        btn.style.color = '#fff';
                         startFrameCapture();
                     } else {
                         alert('Failed to start recording');
