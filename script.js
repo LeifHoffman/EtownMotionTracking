@@ -93,6 +93,17 @@ function resizeCanvases() {
     drawLineChart(dashCtx, dashData, months, 4.2, 4.5);
 }
 
+// --- run button recording toggle (example implementation) ---
+const runBtn = document.getElementById('run');
+let recording = false;
+if (runBtn) {
+    runBtn.addEventListener('click', () => {
+        recording = !recording;
+        runBtn.classList.toggle('recording', recording);
+        // TODO: integrate with actual recording logic instead of toggle
+    });
+}
+
 // Initial draw and setup resize listener
 window.addEventListener('resize', resizeCanvases);
 resizeCanvases();
