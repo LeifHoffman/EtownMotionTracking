@@ -48,6 +48,8 @@ options = PoseLandmarkerOptions(
 
 landmarker = PoseLandmarker.create_from_options(options)
 
+allcaptured = False
+
 # ---- OpenCV Webcam Loop ----
 
 cap = cv2.VideoCapture(0)
@@ -86,6 +88,18 @@ try:
         # Send the frame to the landmarker async
         timestamp_ms = int(time.time() * 1000)
         landmarker.detect_async(mp_image, timestamp_ms)
+
+        # Check if all wanted points (11-32) are captured
+        if latest_landmarks and len(latest_landmarks) > 0:
+            pose = latest_landmarks[0]  # Assume single person
+            wanted_indices = range(11, 33)  # Body pose points (skip face 0-10)
+            visibility_threshold = 0.5  # Adjust as needed for stricter/looser detection
+            allcaptured = all( 
+                idx < len(pose) and pose[idx].visibility > visibility_threshold
+                for idx in wanted_indices
+            )
+        else:
+            allcaptured = False
 
         # Draw landmarks on frame
         if latest_landmarks:
@@ -127,6 +141,10 @@ try:
         if recording:
             cv2.circle(frame, (20, 20), 8, (0, 0, 255), -1)
             cv2.putText(frame, "REC", (35, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+        elif recording == False and allcaptured == False:
+            cv2.putText(frame, "OUT OF FRAME", (35, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (169, 169, 169), 2)
+        else:
+            cv2.putText(frame, "READY", (35, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 150, 0), 2)
 
         # Draw frame so you see video
         cv2.imshow("Webcam Pose Tracking", frame)
