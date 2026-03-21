@@ -1,6 +1,31 @@
 import cv2
 import mediapipe as mp
 import time
+import tkinter as tk
+
+# ---- GUI Setup Using tkinter ----
+def show_gui():
+    global root
+    root = tk.Tk()
+    root.title("Save Recording?")
+    root.geometry("300x200")
+
+    def select_option(option):
+        print(f'Selected Option: {option}')
+        if option == "Option 1":
+            print("Saving recording with name 'Leif Recording'")
+        else:
+            print("Deleting recording")
+        root.destroy()
+
+    # Create two buttons for options
+    button1 = tk.Button(root, text="Save Recording", command=lambda: select_option("Option 1"))
+    button1.pack(pady=20)
+
+    button2 = tk.Button(root, text="Delete Recording", command=lambda: select_option("Option 2"))
+    button2.pack(pady=20)
+
+    root.mainloop()
 
 # ---- Setup MediaPipe PoseLandmarker ----
 
@@ -48,7 +73,9 @@ options = PoseLandmarkerOptions(
 
 landmarker = PoseLandmarker.create_from_options(options)
 
+# Variables for tracking if user is in frame or left frame
 allcaptured = False
+leftFrame = False
 
 # ---- OpenCV Webcam Loop ----
 
@@ -138,7 +165,12 @@ try:
             out.write(frame)
 
         # Draw recording indicator
-        if recording:
+        if leftFrame or (recording and allcaptured == False):
+            # If recording but not all points captured, show warning
+            cv2.circle(frame, (20, 20), 8, (0, 255, 255), -1)
+            cv2.putText(frame, "WARNING: LEFT FRAME", (35, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
+            leftFrame = True
+        elif recording:
             cv2.circle(frame, (20, 20), 8, (0, 0, 255), -1)
             cv2.putText(frame, "REC", (35, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
         elif recording == False and allcaptured == False:
@@ -172,6 +204,9 @@ try:
                     out.release()
                     out = None
                 print("Recording stopped")
+                if leftFrame:
+                    show_gui()
+                leftFrame = False  # Reset left frame warning when recording stops
 
 finally:
     landmarker.close()
