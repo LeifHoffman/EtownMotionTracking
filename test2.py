@@ -79,7 +79,13 @@ leftFrame = False
 
 # ---- OpenCV Webcam Loop ----
 
-cap = cv2.VideoCapture(0)
+# If using Raspberry Pi Camera module, prefer V4L2 backend. Otherwise USB webcam is at 0.
+VIDEO_DEVICE = "/dev/video0"  # adjust if needed
+try:
+    cap = cv2.VideoCapture(VIDEO_DEVICE, cv2.CAP_V4L2)
+except Exception:
+    cap = cv2.VideoCapture(0)
+
 prev = 0
 # Recording state
 recording = False
@@ -90,8 +96,11 @@ writer_size = None
 
 # Debug: Check if webcam was opened
 if not cap.isOpened():
-    print("ERROR: Could not open webcam. Check if camera is connected and accessible.")
-    exit()
+    print("ERROR: Could not open camera. Check Pi Camera/V4L2 setup, /dev/video0 status, and permissions.")
+    print(" - run 'v4l2-ctl --list-devices' and verify /dev/video0 exists")
+    print(" - ensure pi user is in video group: sudo usermod -a -G video $(whoami)")
+    print(" - or try sudo apt install libcamera-apps python3-opencv")
+    exit(1)
 
 print("Webcam opened successfully. Starting pose tracking...")
 
