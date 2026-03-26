@@ -79,13 +79,7 @@ leftFrame = False
 
 # ---- OpenCV Webcam Loop ----
 
-# If using Raspberry Pi Camera module, prefer V4L2 backend. Otherwise USB webcam is at 0.
-VIDEO_DEVICE = "/dev/video0"  # adjust if needed
-try:
-    cap = cv2.VideoCapture(VIDEO_DEVICE, cv2.CAP_V4L2)
-except Exception:
-    cap = cv2.VideoCapture(0)
-
+cap = cv2.VideoCapture(0)
 prev = 0
 # Recording state
 recording = False
@@ -96,18 +90,16 @@ writer_size = None
 
 # Debug: Check if webcam was opened
 if not cap.isOpened():
-    print("ERROR: Could not open camera. Check Pi Camera/V4L2 setup, /dev/video0 status, and permissions.")
-    print(" - run 'v4l2-ctl --list-devices' and verify /dev/video0 exists")
-    print(" - ensure pi user is in video group: sudo usermod -a -G video $(whoami)")
-    print(" - or try sudo apt install libcamera-apps python3-opencv")
-    exit(1)
+    print("ERROR: Could not open webcam. Check if camera is connected and accessible.")
+    exit()
 
 print("Webcam opened successfully. Starting pose tracking...")
 
 try:
     while cap.isOpened():
         success, frame = cap.read()
-        if not success:
+        if not success or frame is None:
+            print(f"ERROR: frame capture failed - success={success}, frame_type={type(frame)}")
             break
 
         # Optional: flip frame if needed
@@ -189,6 +181,10 @@ try:
 
         # Draw frame so you see video
         cv2.imshow("Webcam Pose Tracking", frame)
+        if cv2.getWindowProperty("Webcam Pose Tracking", cv2.WND_PROP_VISIBLE) < 1:
+            print("INFO: window closed or not visible - exiting loop")
+            break
+
         key = cv2.waitKey(1) & 0xFF
         if key == 27:  # ESC to quit
             break
