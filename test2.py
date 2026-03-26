@@ -79,7 +79,13 @@ leftFrame = False
 
 # ---- OpenCV Webcam Loop ----
 
-cap = cv2.VideoCapture(0)
+from picamera2 import Picamera2
+
+picam2 = Picamera2()
+preview_config = picam2.create_preview_configuration(main={"size": (640, 480)})
+picam2.configure(preview_config)
+picam2.start()
+
 prev = 0
 # Recording state
 recording = False
@@ -88,16 +94,12 @@ fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 writer_fps = None
 writer_size = None
 
-# Debug: Check if webcam was opened
-if not cap.isOpened():
-    print("ERROR: Could not open webcam. Check if camera is connected and accessible.")
-    exit()
-
-print("Webcam opened successfully. Starting pose tracking...")
+print("PiCamera2 started successfully. Starting pose tracking...")
 
 try:
-    while cap.isOpened():
-        success, frame = cap.read()
+    while True:
+        frame = picam2.capture_array()
+        success = frame is not None
         if not success or frame is None:
             print(f"ERROR: frame capture failed - success={success}, frame_type={type(frame)}")
             break
@@ -194,8 +196,7 @@ try:
             if recording:
                 # Initialize writer on first record start to get actual frame size/fps
                 if writer_fps is None:
-                    fps = cap.get(cv2.CAP_PROP_FPS)
-                    writer_fps = fps if fps and fps > 0 else 30.0
+                    writer_fps = 30.0  # Default for PiCamera2
                 if writer_size is None:
                     h, w = frame.shape[:2]
                     writer_size = (w, h)
@@ -217,6 +218,6 @@ finally:
     landmarker.close()
     if out is not None:
         out.release()
-    cap.release()
+    picam2.stop()
     cv2.destroyAllWindows()
 
