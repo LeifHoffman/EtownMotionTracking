@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import time
 import tkinter as tk
+import os
 
 # ---- GUI Setup Using tkinter ----
 def show_gui():
@@ -16,6 +17,10 @@ def show_gui():
             print("Saving recording with name 'Leif Recording'")
         else:
             print("Deleting recording")
+            # Delete the recording file if it exists            
+            filename = "recording_Leif Recording.mp4"
+            if os.path.exists(filename):
+                os.remove(filename)
         root.destroy()
 
     # Create two buttons for options
@@ -60,6 +65,24 @@ def on_results(result: vision.PoseLandmarkerResult, output_image: mp.Image, time
     else:
         latest_landmarks = None
 
+# Helper to extract body landmark positions for motion measurement
+def get_body_landmark_positions(pose, indices):
+    positions = []
+    for idx in indices:
+        if idx < len(pose) and getattr(pose[idx], 'visibility', 1.0) > 0.5:
+            positions.append((pose[idx].x, pose[idx].y))
+    return positions
+
+# Compute average normalized movement between two poses
+def compute_pose_motion(prev_pose, current_pose, indices):
+    prev_positions = get_body_landmark_positions(prev_pose, indices)
+    curr_positions = get_body_landmark_positions(current_pose, indices)
+    if not prev_positions or not curr_positions or len(prev_positions) != len(curr_positions):
+        return 0.0
+    distances = [((px - cx) ** 2 + (py - cy) ** 2) ** 0.5
+                 for (px, py), (cx, cy) in zip(prev_positions, curr_positions)]
+    return sum(distances) / len(distances)
+
 BaseOptions = mp.tasks.BaseOptions
 PoseLandmarker = mp.tasks.vision.PoseLandmarker
 PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
@@ -75,6 +98,7 @@ landmarker = PoseLandmarker.create_from_options(options)
 
 # Variables for tracking if user is in frame or left frame
 allcaptured = False
+enable_warning = False
 leftFrame = False
 
 # ---- OpenCV Webcam Loop ----
@@ -87,6 +111,14 @@ out = None
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 writer_fps = None
 writer_size = None
+
+# Movement detection state for automatic stop
+prev_pose = None
+is_moving = False
+movement_still_start = None
+movement_still_duration_threshold = 2.0  # seconds
+movement_motion_threshold = 0.015
+movement_still_threshold = 0.008
 
 if not cap.isOpened():
     print("ERROR: Could not open webcam. Check if camera is connected and accessible.")
@@ -159,17 +191,54 @@ try:
                     # Orange circle
                     cv2.circle(frame, (x, y), 4, (0, 165, 255), -1)
                     
+        # Movement detection for automatic stop when user stops moving
+        if latest_landmarks and len(latest_landmarks) > 0 and recording and allcaptured:
+            current_pose = latest_landmarks[0]
+            motion = 0.0
+            if prev_pose is not None:
+                motion = compute_pose_motion(prev_pose, current_pose, range(11, 33))
+            if motion > movement_motion_threshold:
+                is_moving = True
+                movement_still_start = None
+            elif is_moving and motion < movement_still_threshold:
+                if movement_still_start is None:
+                    movement_still_start = time.time()
+                elif time.time() - movement_still_start >= movement_still_duration_threshold:
+                    recording = False
+                    if out is not None:
+                        out.release()
+                        out = None
+                    print("Recording auto-stopped because user stopped moving")
+                    leftFrame = False
+                    enable_warning = False
+                    is_moving = False
+                    movement_still_start = None
+            else:
+                movement_still_start = None
+            prev_pose = current_pose
+        elif not allcaptured:
+            # Reset motion tracking until all points are captured again
+            prev_pose = None
+            is_moving = False
+            movement_still_start = None
 
         # If recording, write the frame
         if recording and out is not None:
             out.write(frame)
 
+        # Enable warning once user is in full frame
+        if recording and allcaptured == True:
+            enable_warning = True
+
         # Draw recording indicator
-        if leftFrame or (recording and allcaptured == False):
+        if leftFrame or (recording and allcaptured == False and enable_warning):
             # If recording but not all points captured, show warning
             cv2.circle(frame, (20, 20), 8, (0, 255, 255), -1)
             cv2.putText(frame, "WARNING: LEFT FRAME", (35, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
             leftFrame = True
+        elif recording and allcaptured == False:
+            cv2.circle(frame, (20, 20), 8, (0, 255, 255), -1)
+            cv2.putText(frame, "MOVE INTO POSITION", (35, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
         elif recording:
             cv2.circle(frame, (20, 20), 8, (0, 0, 255), -1)
             cv2.putText(frame, "REC", (35, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
@@ -210,6 +279,7 @@ try:
                 if leftFrame:
                     show_gui()
                 leftFrame = False  # Reset left frame warning when recording stops
+                enable_warning = False  # Reset warning state when recording stops
 
 finally:
     landmarker.close()
