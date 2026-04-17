@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import time
 import tkinter as tk
+from tkinter import ttk
 import os
 
 # ---- GUI Setup Using tkinter ----
@@ -31,6 +32,42 @@ def show_gui():
     button2.pack(pady=20)
 
     root.mainloop()
+
+# ---- Name Selection using tkinter ----
+def get_user_name():
+    global root, selected_user
+    root = tk.Tk()
+    root.title("Select a user")
+    root.geometry("300x200")
+    
+    selected_user = None
+
+    # List of athletes
+    athletes = ["Vincent", "Evan", "James", "Leif", "Sarah", "Emma", "Michael", "Jessica"]
+
+    # Create label
+    label = tk.Label(root, text="Select an athlete:", font=("Arial", 12))
+    label.pack(pady=10)
+
+    # Create combobox
+    combobox = ttk.Combobox(root, values=athletes, state="readonly", width=25)
+    combobox.pack(pady=10)
+    combobox.current(0)  # Set default selection to first item
+
+    def confirm_selection():
+        global selected_user
+        selected_user = combobox.get()
+        print(f'Selected Athlete: {selected_user}')
+        root.destroy()
+
+    # Create confirm button
+    button = tk.Button(root, text="Confirm", command=confirm_selection)
+    button.pack(pady=20)
+
+    root.mainloop()
+    
+    return selected_user
+
 
 # ---- Setup MediaPipe PoseLandmarker ----
 
@@ -100,6 +137,9 @@ landmarker = PoseLandmarker.create_from_options(options)
 allcaptured = False
 enable_warning = False
 leftFrame = False
+
+# Initialize name as NULL
+name = None
 
 # ---- OpenCV Webcam Loop ----
 
@@ -266,10 +306,12 @@ try:
                 if writer_size is None:
                     h, w = frame.shape[:2]
                     writer_size = (w, h)
-                # TODO Update 'name' variable to be dynamic based on user input
-                name = "Leif Recording"
+                if name is None:
+                    name = get_user_name()
                 filename = f"recording_{name}.mp4"
                 out = cv2.VideoWriter(filename, fourcc, writer_fps, writer_size)
+                
+
                 print(f"Recording started -> {filename}")
             else:
                 if out is not None:
@@ -280,7 +322,8 @@ try:
                     show_gui()
                 leftFrame = False  # Reset left frame warning when recording stops
                 enable_warning = False  # Reset warning state when recording stops
-
+                name = None  # Reset name for next recording
+                
 finally:
     landmarker.close()
     if out is not None:
