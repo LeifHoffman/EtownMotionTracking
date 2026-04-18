@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elizabethtown College Athletics</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>ElizabethtownCollege Athletics</h1>
+    </div>
+
+    <!-- NAV -->
+    <div class="nav">
+        <button onclick="window.location.href='home.html';" class="button-active">
+            Recording
+        </button>
+        <button onclick="window.location.href='stats.html';">
+            Stats
+        </button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+
+        <!-- SELECT ATHLETE + START RECORDING -->
+        <div class="home-action-grid">
+
+            <div class="action-card" id="selectAthleteCard">
+                <div class="action-card-label">Select Athlete</div>
+                <select id="athleteSelect" class="athlete-select">
+                    <option value="">-- Select an Athlete --</option>
+                    <option value="vincent">Vincent</option>
+                    <option value="evan">Evan</option>
+                    <option value="james">James</option>
+                    <option value="leif">Leif</option>
+                    <option value="david">David</option>
+                </select>
+            </div>
+
+            <button id="run" class="start-btn" disabled>Start Recording</button>
+
+        </div>
+
+        <!-- SESSION HISTORY -->
+        <div class="table-card">
+            <div class="chart-title">Session History</div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Athlete</th>
+                        <th>Date</th>
+                        <th>Test</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vincent</td>
+                        <td>2025-04-10</td>
+                        <td>Vertical Jump</td>
+                        <td>21.2 in</td>
+                    </tr>
+                    <tr>
+                        <td>Evan</td>
+                        <td>2025-04-10</td>
+                        <td>Vertical Jump</td>
+                        <td>19.9 in</td>
+                    </tr>
+                    <tr>
+                        <td>James</td>
+                        <td>2025-04-09</td>
+                        <td>Vertical Jump</td>
+                        <td>18.4 in</td>
+                    </tr>
+                    <tr>
+                        <td>Leif</td>
+                        <td>2025-04-09</td>
+                        <td>Vertical Jump</td>
+                        <td>17.7 in</td>
+                    </tr>
+                    <tr>
+                        <td>David</td>
+                        <td>2025-04-08</td>
+                        <td>Vertical Jump</td>
+                        <td>17.1 in</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const athleteSelect = document.getElementById('athleteSelect');
+        const runBtn = document.getElementById('run');
+
+        athleteSelect.addEventListener('change', function () {
+            if (this.value) {
+                runBtn.disabled = false;
+                runBtn.classList.add('start-btn-ready');
+            } else {
+                runBtn.disabled = true;
+                runBtn.classList.remove('start-btn-ready');
+            }
+        });
+    </script>
+
+</body>
+</html>
