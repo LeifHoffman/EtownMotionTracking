@@ -10,7 +10,7 @@
 
     <!-- HEADER -->
     <div class="header">
-        <h1>ElizabethtownCollege Athletics</h1>
+        <h1>College Athletics</h1>
     </div>
 
     <!-- NAV -->
@@ -32,12 +32,7 @@
             <div class="action-card" id="selectAthleteCard">
                 <div class="action-card-label">Select Athlete</div>
                 <select id="athleteSelect" class="athlete-select">
-                    <option value="">-- Select an Athlete --</option>
-                    <option value="vincent">Vincent</option>
-                    <option value="evan">Evan</option>
-                    <option value="james">James</option>
-                    <option value="leif">Leif</option>
-                    <option value="david">David</option>
+                    <option value="">-- Loading athletes... --</option>
                 </select>
             </div>
 
@@ -57,37 +52,8 @@
                         <th>Result</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Vincent</td>
-                        <td>2025-04-10</td>
-                        <td>Vertical Jump</td>
-                        <td>21.2 in</td>
-                    </tr>
-                    <tr>
-                        <td>Evan</td>
-                        <td>2025-04-10</td>
-                        <td>Vertical Jump</td>
-                        <td>19.9 in</td>
-                    </tr>
-                    <tr>
-                        <td>James</td>
-                        <td>2025-04-09</td>
-                        <td>Vertical Jump</td>
-                        <td>18.4 in</td>
-                    </tr>
-                    <tr>
-                        <td>Leif</td>
-                        <td>2025-04-09</td>
-                        <td>Vertical Jump</td>
-                        <td>17.7 in</td>
-                    </tr>
-                    <tr>
-                        <td>David</td>
-                        <td>2025-04-08</td>
-                        <td>Vertical Jump</td>
-                        <td>17.1 in</td>
-                    </tr>
+                <tbody id="sessionTableBody">
+                    <tr><td colspan="4" style="color:#999; text-align:center; padding:20px;">Loading sessions...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -98,6 +64,23 @@
     <script>
         const athleteSelect = document.getElementById('athleteSelect');
         const runBtn = document.getElementById('run');
+        const sessionTableBody = document.getElementById('sessionTableBody');
+
+        // --- Athlete dropdown ---
+        fetch('/api/athletes')
+            .then(r => r.json())
+            .then(athletes => {
+                athleteSelect.innerHTML = '<option value="">-- Select an Athlete --</option>';
+                athletes.forEach(a => {
+                    const opt = document.createElement('option');
+                    opt.value = a.id;
+                    opt.textContent = a.name;
+                    athleteSelect.appendChild(opt);
+                });
+            })
+            .catch(() => {
+                athleteSelect.innerHTML = '<option value="">-- Could not load athletes --</option>';
+            });
 
         athleteSelect.addEventListener('change', function () {
             if (this.value) {
@@ -108,6 +91,32 @@
                 runBtn.classList.remove('start-btn-ready');
             }
         });
+
+        // --- Session history ---
+        fetch('/api/sessions')
+            .then(r => r.json())
+            .then(sessions => {
+                if (!sessions.length) {
+                    sessionTableBody.innerHTML = '<tr><td colspan="4" style="color:#999; text-align:center; padding:20px;">No sessions recorded yet.</td></tr>';
+                    return;
+                }
+                sessionTableBody.innerHTML = sessions.map(s => {
+                    const date = s.started_at ? s.started_at.split('T')[0] : '—';
+                    const result = s.metric_value != null
+                        ? `${s.metric_value.toFixed(2)} in`
+                        : '—';
+                    return `
+                        <tr>
+                            <td>${s.athlete_name}</td>
+                            <td>${date}</td>
+                            <td>Vertical Jump</td>
+                            <td>${result}</td>
+                        </tr>`;
+                }).join('');
+            })
+            .catch(() => {
+                sessionTableBody.innerHTML = '<tr><td colspan="4" style="color:#999; text-align:center; padding:20px;">Could not load sessions.</td></tr>';
+            });
     </script>
 
 </body>
