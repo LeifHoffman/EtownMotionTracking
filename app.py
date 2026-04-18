@@ -70,7 +70,7 @@ def get_db():
 
 @app.route('/')
 def index():
-    return send_from_directory('.', 'Recording_Page2.html')
+    return send_from_directory('.', 'home.html')
 
 @app.route('/api/start', methods=['POST'])
 def start_recording():
