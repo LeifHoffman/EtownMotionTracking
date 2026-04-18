@@ -7,6 +7,7 @@ from mediapipe.tasks.python import vision
 import numpy as np
 import os
 import time
+import sqlite3
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 
@@ -60,6 +61,12 @@ def on_results(result: vision.PoseLandmarkerResult, output_image: mp.Image, time
         latest_landmarks = result.pose_landmarks
     else:
         latest_landmarks = None
+
+# Database grabber
+def get_db():
+    conn = sqlite3.connect("motion_tracking.db")
+    conn.row_factory = sqlite3.Row
+    return conn
 
 @app.route('/')
 def index():
@@ -204,6 +211,31 @@ def get_status():
         'camera_active': camera is not None and camera.isOpened(),
         'recording': recording
     })
+
+# API endpoints for athletes and sessions
+@app.route('/api/athletes')
+def get_athletes():
+    conn = get_db()
+    rows = conn.execute("SELECT id, name FROM athletes ORDER BY name").fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
+
+@app.route('/api/sessions')
+def get_sessions():
+    conn = get_db()
+    rows = conn.execute("""
+        SELECT s.id, a.name AS athlete_name, s.started_at,
+               r.metric_value
+        FROM sessions s
+        JOIN athletes a ON a.id = s.athlete_id
+        LEFT JOIN results r ON r.session_id = s.id
+                           AND r.metric_name = 'jump_height_in'
+        WHERE s.session_type = 'jump'
+        ORDER BY s.started_at DESC
+        LIMIT 50
+    """).fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
 
 if __name__ == '__main__':
     # Initialize pose landmarker on startup
