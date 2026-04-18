@@ -8,11 +8,9 @@ cur.executescript("""
 CREATE TABLE IF NOT EXISTS athletes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    team TEXT,
     year TEXT,
     height TEXT,
     weight INTEGER,
-    major TEXT
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
@@ -21,7 +19,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     started_at TEXT NOT NULL,
     ended_at TEXT,
     frame_count INTEGER DEFAULT 0,
-    session_type TEXT CHECK(session_type IN ('jump','sprint','other')) DEFAULT 'other',
+    session_type TEXT CHECK(session_type IN ('jump','other')) DEFAULT 'other',
     video_filename TEXT,
     FOREIGN KEY (athlete_id) REFERENCES athletes(id)
 );

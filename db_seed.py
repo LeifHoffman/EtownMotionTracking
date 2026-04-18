@@ -7,18 +7,18 @@ conn = sqlite3.connect("motion_tracking.db")
 cur = conn.cursor()
 
 athletes = [
-    ("Vincent", "Basketball", "Junior",   "6-1",  185, "Business"),
-    ("Evan",    "Baseball",   "Senior",   "6-3",  180, "Engineering"),
-    ("James",   "Football",   "Sophomore","5-11", 190, "Kinesiology"),
-    ("Leif",    "Track",      "Junior",   "5-10", 165, "Computer Science"),
-    ("Sarah",   "Soccer",     "Senior",   "5-6",  135, "Biology"),
-    ("Emma",    "Volleyball", "Freshman", "5-9",  145, "Nursing"),
-    ("Michael", "Basketball", "Junior",   "6-4",  210, "Physics"),
-    ("Jessica", "Track",      "Sophomore","5-5",  130, "Psychology"),
+    ("Vincent", "Junior",   "6-1",  185),
+    ("Evan", "Senior",   "6-3",  180),
+    ("James", "Sophomore","5-11", 190),
+    ("Leif", "Junior",   "5-10", 165),
+    ("Sarah", "Senior",   "5-6",  135),
+    ("Emma", "Freshman", "5-9",  145),
+    ("Michael", "Junior",   "6-4",  210),
+    ("Jessica", "Sophomore","5-5",  130),
 ]
 
 cur.executemany(
-    "INSERT INTO athletes (name, team, year, height, weight, major) VALUES (?,?,?,?,?,?)",
+    "INSERT INTO athletes (name, year, height, weight) VALUES (?,?,?,?)",
     athletes
 )
 conn.commit()
