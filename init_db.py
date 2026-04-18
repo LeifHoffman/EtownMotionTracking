@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS athletes (
     name TEXT NOT NULL,
     year TEXT,
     height TEXT,
-    weight INTEGER,
+    weight INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
