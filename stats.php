@@ -59,6 +59,9 @@ try {
         <button onclick="window.location.href='stats.php';" class="button-active">
             Stats
         </button>
+        <button onclick="window.location.href='edit.php';">
+            Edit Athletes
+        </button>
     </div>
 
     <!-- MAIN CONTENT -->
