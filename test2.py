@@ -4,6 +4,7 @@ import time
 import tkinter as tk
 from tkinter import ttk
 import os
+import sys
 
 # ---- GUI Setup Using tkinter ----
 def show_gui():
@@ -15,7 +16,7 @@ def show_gui():
     def select_option(option):
         print(f'Selected Option: {option}')
         if option == "Option 1":
-            print("Saving recording with name 'Leif Recording'")
+            print("Saving recording")
         else:
             print("Deleting recording")
             # Delete the recording file if it exists            
@@ -70,6 +71,13 @@ def get_user_name():
 
 
 # ---- Setup MediaPipe PoseLandmarker ----
+
+# Use command-line argument for selected athlete name when provided
+if len(sys.argv) > 1:
+    name = sys.argv[1]
+    print(f"Selected athlete from CLI arg: {name}")
+else:
+    name = None
 
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
@@ -308,7 +316,7 @@ try:
                     writer_size = (w, h)
                 if name is None:
                     name = get_user_name()
-                filename = f"recording_{name}.mp4"
+                filename = f"recordings/recording_{name}.mp4"
                 out = cv2.VideoWriter(filename, fourcc, writer_fps, writer_size)
                 
 

@@ -1,6 +1,8 @@
-// Get canvas contexts
-const jumpCtx = document.getElementById('jumpChart').getContext('2d');
-const dashCtx = document.getElementById('dashChart').getContext('2d');
+// Get chart canvas elements and contexts if they exist
+const jumpCanvas = document.getElementById('jumpChart');
+const dashCanvas = document.getElementById('dashChart');
+const jumpCtx = jumpCanvas ? jumpCanvas.getContext('2d') : null;
+const dashCtx = dashCanvas ? dashCanvas.getContext('2d') : null;
 
 // Data for charts
 const jumpData = [14.5, 14.8, 15.2, 15.1, 15.6, 15.9, 16.3, 16.8, 17.1, 17.5, 18.2];
@@ -88,22 +90,62 @@ function resizeCanvases() {
         canvas.height = container.clientHeight;
     });
     
-    // Redraw charts with data
-    drawLineChart(jumpCtx, jumpData, months, 13, 19);
-    drawLineChart(dashCtx, dashData, months, 4.2, 4.5);
+    // Redraw charts with data if the contexts exist
+    if (jumpCtx) {
+        drawLineChart(jumpCtx, jumpData, months, 13, 19);
+    }
+    if (dashCtx) {
+        drawLineChart(dashCtx, dashData, months, 4.2, 4.5);
+    }
 }
 
-// --- run button recording toggle (example implementation) ---
-const runBtn = document.getElementById('run');
-let recording = false;
-if (runBtn) {
-    runBtn.addEventListener('click', () => {
-        recording = !recording;
-        runBtn.classList.toggle('recording', recording);
-        // TODO: integrate with actual recording logic instead of toggle
+// --- run button recording action ---
+const runButton = document.getElementById('run');
+if (runButton) {
+    runButton.addEventListener('click', async () => {
+        const athleteSelect = document.getElementById('athleteSelect');
+        if (!athleteSelect || !athleteSelect.value) {
+            alert('Please select an athlete first.');
+            return;
+        }
+
+        const athleteName = athleteSelect.options[athleteSelect.selectedIndex].text.trim();
+        if (!athleteName) {
+            alert('Selected athlete has no valid name.');
+            return;
+        }
+
+        runButton.disabled = true;
+        const originalText = runButton.textContent;
+        runButton.textContent = 'Starting...';
+
+        try {
+            const formData = new FormData();
+            formData.append('athleteName', athleteName);
+
+            const response = await fetch('run_test2.php', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const text = await response.text();
+            if (!response.ok) {
+                throw new Error(text || 'Failed to start recording script.');
+            }
+
+            alert('Recording script started for ' + athleteName + '.');
+        } catch (error) {
+            console.error(error);
+            alert('Error starting recording: ' + error.message);
+        } finally {
+            runButton.disabled = false;
+            runButton.textContent = originalText;
+        }
     });
 }
 
 // Initial draw and setup resize listener
-window.addEventListener('resize', resizeCanvases);
-resizeCanvases();
+if (jumpCtx || dashCtx) {
+    window.addEventListener('resize', resizeCanvases);
+    resizeCanvases();
+}
