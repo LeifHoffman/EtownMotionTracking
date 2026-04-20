@@ -67,8 +67,8 @@ $athletes = $db->query("SELECT id, name FROM athletes ORDER BY name")->fetchAll(
         <?php endif; ?>
 
         <!-- Add Athlete Form -->
-        <div class="table-card">
-            <div class="chart-title">Add New Athlete</div>
+        <div class="table-card" style="margin-bottom: 32px;">
+            <div class="chart-title">Add Table Information</div>
 
             <!-- Centered input and button -->
             <div style="text-align: center; margin: 20px 0;">
@@ -81,9 +81,9 @@ $athletes = $db->query("SELECT id, name FROM athletes ORDER BY name")->fetchAll(
                             type="text"
                             id="athleteName"
                             name="name"
-                            placeholder="Enter athlete name"
+                            placeholder="???"
                             required
-                            style="padding: 8px; width: 250px; font-size: 1rem;"
+                            style="padding: 5px; width: 250px; font-size: 1rem; text-align: center; margin-top: 10px;"
                         >
                     </div>
 
@@ -95,7 +95,7 @@ $athletes = $db->query("SELECT id, name FROM athletes ORDER BY name")->fetchAll(
                             disabled
                             style="padding: 10px 20px; font-size: 1rem; cursor: not-allowed;"
                         >
-                            Add Athlete
+                            Add
                         </button>
                     </div>
                 </form>
@@ -122,13 +122,13 @@ $athletes = $db->query("SELECT id, name FROM athletes ORDER BY name")->fetchAll(
                     <tbody>
                         <?php foreach ($athletes as $index => $athlete): ?>
                             <tr style="border-bottom: 1px solid #ddd;">
-                                <td style="padding: 12px; text-align: center;">
+                                <td style="padding: 12px; text-align: left;">
                                     <?php echo $index + 1; ?>
                                 </td>
                                 <td style="padding: 12px;">
                                     <?php echo htmlspecialchars($athlete['name']); ?>
                                 </td>
-                                <td style="padding: 12px; text-align: center;">
+                                <td style="padding: 12px; text-align: left;">
                                     <form
                                         method="POST"
                                         class="delete-form"
