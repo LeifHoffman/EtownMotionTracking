@@ -1,0 +1,11 @@
+HOLY FUCK FIX EVERYTHING
+
+Better database shit, this is kind of poopy and fake data
+
+Create systemctl service to start PHP server
+    ~/ source env/bin/activate (In MotionTracking Dir)
+    ~/ PHP -S localhost:8000
+Remake .desktop service to serve new PHP pages 
+    Open page localhost:8000/home.php
+Kill myself
+
