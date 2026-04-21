@@ -123,7 +123,7 @@ if (runButton) {
             const formData = new FormData();
             formData.append('athleteName', athleteName);
 
-            const response = await fetch('run_test2.php', {
+            const response = await fetch('runsavetest.php', {
                 method: 'POST',
                 body: formData,
             });
