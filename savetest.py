@@ -205,7 +205,7 @@ def start_writer(frame, athlete_name):
     avi_path = f"recordings/recording_{athlete_name}_tmp.avi"
     writer = cv2.VideoWriter(avi_path, fourcc, fps, size)
     if not writer.isOpened():
-        print("ERROR: VideoWriter failed to open ? check that XVID codec is available")
+        print("ERROR: VideoWriter failed to open — check that XVID codec is available")
     else:
         print(f"Recording started -> {avi_path} (will convert to {mp4_path} on stop)")
     return writer, fps, size, avi_path, mp4_path
@@ -227,6 +227,12 @@ try:
 
         # Optional: flip frame if needed
         frame = cv2.flip(frame, 1)
+
+        # PiCamera2 outputs RGB (or RGBA); convert to BGR for correct OpenCV display and writing
+        if frame.ndim == 3 and frame.shape[2] == 4:
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGBA2BGR)
+        else:
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         # Initialize video writer if recording started and not yet initialized
         if recording and out is None:
@@ -327,11 +333,7 @@ try:
         # PiCamera2 may return XRGB8888 (4-channel); VideoWriter requires BGR (3-channel).
         # Converting here ensures frames are always written correctly.
         if recording and out is not None:
-            if frame.ndim == 3 and frame.shape[2] == 4:
-                write_frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
-            else:
-                write_frame = frame
-            out.write(write_frame)
+            out.write(frame)
 
         # Enable warning once user is in full frame
         if recording and allcaptured:
