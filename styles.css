@@ -314,17 +314,24 @@ canvas {
     text-align: center;
 }
 
+/* Exported button – enabled state */
 .export-btn {
-    background: #e5e5e5;
-    color: #999;
-    border: none;
+    background: white;
+    color: #1d1d1f;
+    border: 1px solid #e5e5e5;
     border-radius: 8px;
     padding: 12px 24px;
     font-size: 14px;
     font-weight: 600;
-    cursor: not-allowed;
+    cursor: pointer;
     align-self: center;
+    transition: background 0.2s;
 }
+
+.export-btn:hover {
+    background: #f5f5f7;
+}
+
 
 /* ── RESPONSIVE ── */
 @media (max-width: 1024px) {

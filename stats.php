@@ -156,13 +156,17 @@ try {
                 </table>
             </div>
 
-            <!-- Export placeholder -->
-            <div class="chart-card export-card">
-                <div class="chart-title">Database Export</div>
-                <p class="export-desc">Download a copy of all recorded session data.</p>
-                <button class="export-btn" disabled title="Coming soon">Export Database</button>
-            </div>
+        <!-- Database Export -->
+        <div class="chart-card export-card">
+            <div class="chart-title">Database Export</div>
+            <p class="export-desc">Download a copy of all recorded session data.</p>
+            <form action="export_db.php" method="get" style="text-align: center; margin-top: 8px;">
+                <button class="export-btn" type="submit">
+                    Export Entire Database
+                </button>
+            </form>
         </div>
+        
 
     </div>
 
