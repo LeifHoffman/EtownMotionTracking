@@ -84,7 +84,7 @@ from mediapipe.tasks.python import vision
 
 # Path to your downloaded model file (.task)
 # Download the Pose Landmarker model as per the docs
-model_path = "pose_landmarker_full.task"  # Update this path to your model file
+model_path = os.path.join(os.path.dirname(__file__), "pose_landmarker_full.task")  # Update this path to your model file
 
 # Store latest landmarks
 latest_landmarks = None
@@ -153,7 +153,7 @@ name = None
 
 cap = cv2.VideoCapture(0)
 prev = 0
-# Recording state
+# Recording state, automatically start recording if name provided via CLI arg, otherwise wait for 'r' key
 if len(sys.argv) > 1:
     recording = True
 else:
@@ -186,6 +186,22 @@ try:
 
         # Optional: flip frame if needed
         frame = cv2.flip(frame, 1)
+
+        # Initialize video writer if recording started and not yet initialized
+        if recording and out is None:
+            if writer_fps is None:
+                writer_fps = 30.0
+            if writer_size is None:
+                h, w = frame.shape[:2]
+                writer_size = (w, h)
+            if name is None:
+                if len(sys.argv) > 1:
+                    name = sys.argv[1]
+                else:
+                    name = get_user_name()
+            filename = f"recordings/recording_{name}.mp4"
+            out = cv2.VideoWriter(filename, fourcc, writer_fps, writer_size)
+            print(f"Recording started -> {filename}")
 
         # MediaPipe wants RGB images, OpenCV gives BGR
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -311,19 +327,18 @@ try:
         if key == ord('r'):
             recording = not recording
             if recording:
-                # Initialize writer on first record start to get actual frame size/fps
-                if writer_fps is None:
-                    writer_fps = 30.0  # Default for PiCamera2
-                if writer_size is None:
-                    h, w = frame.shape[:2]
-                    writer_size = (w, h)
-                if name is None:
-                    name = get_user_name()
-                filename = f"recordings/recording_{name}.mp4"
-                out = cv2.VideoWriter(filename, fourcc, writer_fps, writer_size)
-                
-
-                print(f"Recording started -> {filename}")
+                # Initialize writer if not already initialized
+                if out is None:
+                    if writer_fps is None:
+                        writer_fps = 30.0  # Default for PiCamera2
+                    if writer_size is None:
+                        h, w = frame.shape[:2]
+                        writer_size = (w, h)
+                    if name is None:
+                        name = get_user_name()
+                    filename = f"recordings/recording_{name}.mp4"
+                    out = cv2.VideoWriter(filename, fourcc, writer_fps, writer_size)
+                    print(f"Recording started -> {filename}")
             else:
                 if out is not None:
                     out.release()
@@ -334,10 +349,12 @@ try:
                 leftFrame = False  # Reset left frame warning when recording stops
                 enable_warning = False  # Reset warning state when recording stops
                 name = None  # Reset name for next recording
-                if len(sys.argv) > 1:
-                    # If name was provided via CLI arg, exit after one recording
-                    print("Exiting after one recording with CLI arg")
-                    break
+                
+        # Exit if recording stopped and name was provided via CLI
+        if not recording and len(sys.argv) > 1:
+            print("Exiting after recording stop with CLI arg")
+            break
+                
                 
 finally:
     landmarker.close()

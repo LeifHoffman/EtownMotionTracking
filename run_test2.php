@@ -20,19 +20,9 @@ $escapedScript = escapeshellarg($scriptPath);
 $escapedName = escapeshellarg($athleteName);
 
 // Use Windows start command so the Python script opens separately and returns immediately.
-$command = "cmd /C start \"\" python $escapedScript $escapedName";
-
-// If python is not available, try the py launcher.
-if ($output === null) {
-    $command = "cmd /C start \"\" py $escapedScript $escapedName";
-    $output = shell_exec($command);
-}
-
-if ($output === null) {
-    http_response_code(500);
-    echo 'Unable to launch Python process. Ensure Python is installed and on the PATH.';
-    exit;
-}
+// Change to the script directory first to ensure relative paths work correctly.
+$command = "cmd /C cd " . escapeshellarg(__DIR__) . " && start \"\" python $escapedScript $escapedName";
+$output = shell_exec($command);
 
 http_response_code(200);
 echo "Started test2.py for $athleteName";

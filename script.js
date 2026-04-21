@@ -132,8 +132,6 @@ if (runButton) {
             if (!response.ok) {
                 throw new Error(text || 'Failed to start recording script.');
             }
-
-            alert('Recording script started for ' + athleteName + '.');
         } catch (error) {
             console.error(error);
             alert('Error starting recording: ' + error.message);
