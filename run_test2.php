@@ -23,7 +23,6 @@ $escapedName = escapeshellarg($athleteName);
 $command = "cmd /C start \"\" python $escapedScript $escapedName";
 
 // If python is not available, try the py launcher.
-$output = shell_exec($command);
 if ($output === null) {
     $command = "cmd /C start \"\" py $escapedScript $escapedName";
     $output = shell_exec($command);

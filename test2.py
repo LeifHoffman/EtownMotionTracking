@@ -7,7 +7,7 @@ import os
 import sys
 
 # ---- GUI Setup Using tkinter ----
-def show_gui():
+def show_gui(filename=None):
     global root
     root = tk.Tk()
     root.title("Save Recording?")
@@ -19,10 +19,10 @@ def show_gui():
             print("Saving recording")
         else:
             print("Deleting recording")
-            # Delete the recording file if it exists            
-            filename = "recording_Leif Recording.mp4"
-            if os.path.exists(filename):
+            # Delete the recording file if it exists and filename is provided
+            if filename and os.path.exists(filename):
                 os.remove(filename)
+                print(f"Deleted file: {filename}")
         root.destroy()
 
     # Create two buttons for options
@@ -154,7 +154,10 @@ name = None
 cap = cv2.VideoCapture(0)
 prev = 0
 # Recording state
-recording = False
+if len(sys.argv) > 1:
+    recording = True
+else:
+    recording = False
 out = None
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 writer_fps = None
@@ -327,10 +330,14 @@ try:
                     out = None
                 print("Recording stopped")
                 if leftFrame:
-                    show_gui()
+                    show_gui(filename)
                 leftFrame = False  # Reset left frame warning when recording stops
                 enable_warning = False  # Reset warning state when recording stops
                 name = None  # Reset name for next recording
+                if len(sys.argv) > 1:
+                    # If name was provided via CLI arg, exit after one recording
+                    print("Exiting after one recording with CLI arg")
+                    break
                 
 finally:
     landmarker.close()
